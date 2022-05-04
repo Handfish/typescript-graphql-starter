@@ -12,7 +12,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Author, Book, BookCategory } from "../entities";
+import { Author, Book } from "../entities";
 import { BaseResponse, MyContext } from "../utils/types";
 
 @ObjectType()
@@ -44,15 +44,6 @@ export class BookResolver {
     }
   }
 
-  @FieldResolver(() => [BookCategory], { nullable: true })
-  categories(@Root() book: Book, @Ctx() { bookCategoryLoader }: MyContext) {
-    if (book.categories.isInitialized() && book.categories.length > 0) {
-      return bookCategoryLoader.loadMany(book.categories.getIdentifiers());
-    } else {
-      return null;
-    }
-  }
-
   @Query(() => Book, { nullable: true })
   async book(
     @Ctx() { em }: MyContext,
@@ -79,7 +70,7 @@ export class BookResolver {
       .orderBy({ createdAt: QueryOrder.DESC })
       .limit(realLimit);
     if (cursor) {
-      qb.where("a.createdAt < :cursor", [new Date(parseInt(cursor))]);
+      qb.where("b.createdAt < :cursor", [new Date(parseInt(cursor))]);
     }
     console.log(await qb.getResult());
     return qb.getResultList();
@@ -123,7 +114,7 @@ export class BookResolver {
   }
 
   @Mutation(() => BookResponse, { nullable: true })
-  async updatebook(
+  async updateBook(
     @Arg("id") id: string,
     @Arg("options") options: CreateBookInput,
     @Ctx() { em }: MyContext
@@ -171,7 +162,7 @@ export class BookResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletebook(
+  async deleteBook(
     @Arg("id") id: string,
     @Ctx() { em }: MyContext
   ): Promise<boolean> {

@@ -4,7 +4,7 @@ import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import path from "path";
 import { __prod__ } from "./utils/constants";
-import { Book, Author, BookCategory } from "./entities";
+import { Book, Author } from "./entities";
 import { TSMigrationGenerator } from "@mikro-orm/migrations";
 
 export default {
@@ -15,7 +15,7 @@ export default {
   debug: !__prod__,
   metadataProvider: ReflectMetadataProvider,
   highlighter: new SqlHighlighter(),
-  entities: [Book, Author, BookCategory],
+  entities: [Book, Author],
   migrations: {
     path: path.join(__dirname, "./migrations"),
     pattern: /^[\w-]+\d+\.[tj]s$/,

@@ -1,3 +1,4 @@
 import { BookResolver } from "./book";
+import { AuthorResolver } from "./author";
 
-export { BookResolver };
+export { BookResolver, AuthorResolver };

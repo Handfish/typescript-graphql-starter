@@ -1,13 +1,6 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  Property,
-} from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { ObjectType, Field, Int } from "type-graphql";
 import Author from "./Author";
-import BookCategory from "./BookCategory";
 import CustomBaseEntity from "./templates/CustomBaseEntity";
 
 @ObjectType()
@@ -22,13 +15,10 @@ export default class Book extends CustomBaseEntity {
   year?: number;
 
   @Field()
+  @Property()
   authorId!: string;
 
   @Field(() => Author, { nullable: true })
   @ManyToOne(() => Author, { mapToPk: true, nullable: true })
   author?: Author;
-
-  @Field(() => [BookCategory], { nullable: true })
-  @ManyToMany(() => BookCategory)
-  categories = new Collection<BookCategory>(this);
 }

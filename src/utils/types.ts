@@ -1,18 +1,13 @@
 import { EntityManager, PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Request } from "express";
 import { Field, ObjectType } from "type-graphql";
-import {
-  createBookLoader,
-  createAuthorLoader,
-  createBookCategoryLoader,
-} from "../loaders";
+import { createBookLoader, createAuthorLoader } from "../loaders";
 
 export type MyContext = {
   req: Request;
   em: EntityManager<PostgreSqlDriver>;
   bookLoader: ReturnType<typeof createBookLoader>;
   authorLoader: ReturnType<typeof createAuthorLoader>;
-  bookCategoryLoader: ReturnType<typeof createBookCategoryLoader>;
 };
 
 @ObjectType()
