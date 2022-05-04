@@ -1,5 +1,5 @@
 import "dotenv-safe/config";
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request } from "express";
 import { createServer } from "@graphql-yoga/node";
 import { MikroORM } from "@mikro-orm/core";
 import config from "./mikro-orm.config";
@@ -50,11 +50,11 @@ export const startServer = async () => {
   const graphQLServer = createServer({
     schema: await buildSchema({
       resolvers: [BookResolver],
+      validate: false,
     }),
-    context: ({ req, res }) => {
+    context: ({ req }) => {
       return {
         req: req as Request,
-        res: res as Response,
         em: orm.em.fork(),
         bookLoader: createBookLoader(orm.em),
         authorLoader: createAuthorLoader(orm.em),

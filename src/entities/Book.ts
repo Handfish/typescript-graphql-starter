@@ -24,8 +24,8 @@ export default class Book extends CustomBaseEntity {
   @Field()
   authorId!: string;
 
-  @Field(() => Author)
-  @ManyToOne(() => Author, { mapToPk: true })
+  @Field(() => Author, { nullable: true })
+  @ManyToOne(() => Author, { mapToPk: true, nullable: true })
   author?: Author;
 
   @Field(() => [BookCategory], { nullable: true })

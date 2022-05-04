@@ -1,3 +1,4 @@
+import { QueryOrder } from "@mikro-orm/core";
 import {
   Arg,
   Ctx,
@@ -45,7 +46,7 @@ export class BookResolver {
 
   @FieldResolver(() => [BookCategory], { nullable: true })
   categories(@Root() book: Book, @Ctx() { bookCategoryLoader }: MyContext) {
-    if (book.categories) {
+    if (book.categories.isInitialized() && book.categories.length > 0) {
       return bookCategoryLoader.loadMany(book.categories.getIdentifiers());
     } else {
       return null;
@@ -53,19 +54,42 @@ export class BookResolver {
   }
 
   @Query(() => Book, { nullable: true })
-  async book(@Ctx() { em }: MyContext, @Arg("id") id: string) {
+  async book(
+    @Ctx() { em }: MyContext,
+    @Arg("id") id: string
+  ): Promise<Book | null> {
     const book = em.findOne(Book, { id });
     if (!book) {
       return null;
     }
-    return { book };
+    return book;
+  }
+
+  @Query(() => [Book], { nullable: true })
+  async books(
+    @Arg("limit") limit: number,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+    @Ctx() { em }: MyContext
+  ): Promise<Book[] | null> {
+    const realLimit = Math.min(50, limit);
+    const qb = em.createQueryBuilder(Book, "b");
+    qb.select(["b.*"], true)
+      .leftJoinAndSelect("b.author", "a")
+      .leftJoinAndSelect("b.categories", "c")
+      .orderBy({ createdAt: QueryOrder.DESC })
+      .limit(realLimit);
+    if (cursor) {
+      qb.where("a.createdAt < :cursor", [new Date(parseInt(cursor))]);
+    }
+    console.log(await qb.getResult());
+    return qb.getResultList();
   }
 
   @Mutation(() => BookResponse, { nullable: true })
   async createBook(
     @Arg("options") options: CreateBookInput,
     @Ctx() { em }: MyContext
-  ) {
+  ): Promise<BookResponse> {
     if (options.title.length === 0) {
       return {
         errors: [
@@ -87,7 +111,6 @@ export class BookResolver {
       };
     }
     const book = em.create(Book, { ...options });
-    console.log(book);
     try {
       em.persistAndFlush(book);
       return { book };
@@ -104,7 +127,7 @@ export class BookResolver {
     @Arg("id") id: string,
     @Arg("options") options: CreateBookInput,
     @Ctx() { em }: MyContext
-  ) {
+  ): Promise<BookResponse> {
     if (options.title.length === 0) {
       return {
         errors: [
@@ -139,7 +162,7 @@ export class BookResolver {
     try {
       const updatedBook = em.create(Book, { ...options, id });
       em.persistAndFlush(updatedBook);
-      return { updatedBook };
+      return { book: updatedBook };
     } catch {
       return {
         errors: [{ field: "unknown", message: "an unknown error occurred" }],
@@ -148,7 +171,10 @@ export class BookResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletebook(@Arg("id") id: string, @Ctx() { em }: MyContext) {
+  async deletebook(
+    @Arg("id") id: string,
+    @Ctx() { em }: MyContext
+  ): Promise<boolean> {
     try {
       const book = em.findOneOrFail(Book, { id });
       em.removeAndFlush(book);
