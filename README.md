@@ -1,6 +1,4 @@
-<div style="width:100%">
   <img style="display:block;margin-left:auto;margin-right:auto;width:60%;" alt="GraphQL Logo" src="https://graphql.org/img/og-image.png" />
-</div>
 
 # Typescript GraphQL Template
 
