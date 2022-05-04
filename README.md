@@ -5,7 +5,7 @@
 1. Install any needed dev dependencies:
 
 ```console
-foo@bar:~$  yarn install
+yarn install
 ```
 
 2. Boot up local Postgres database (steps differ based on OS)
@@ -13,13 +13,13 @@ foo@bar:~$  yarn install
 4. Boot up Typescript compiler:
 
 ```console
-foo@bar:~$  yarn watch
+yarn watch
 ```
 
 5. Start dev server:
 
 ```console
-foo@bar:~$  yarn dev
+yarn dev
 ```
 
 ## Advanced Config
@@ -27,7 +27,7 @@ foo@bar:~$  yarn dev
 - If you need to add additional properties to the `.env` file, run the following:
 
 ```console
-foo@bar:~$  yarn gen-env
+yarn gen-env
 ```
 
 This will update the `.env.d.ts` and `.env.example` files with the correct properties and type declarations.
@@ -37,14 +37,48 @@ This will update the `.env.d.ts` and `.env.example` files with the correct prope
 - To run SQL migrations, run the following command:
 
 ```console
-foo@bar:~$  yarn migrate
+yarn migrate
 ```
 
 This will use Mikro-ORM's migration generator to construct and execute SQL migrations on your database.
 
 ## Usage with Docker
 
-Coming soon...
+**Build an Image**
+
+```console
+docker build -t {username}/{image-name}:{tag-name}
+```
+
+**Login with Docker Hub**
+
+```console
+docker login
+```
+
+**Push to Docker Hub**
+
+```console
+docker push {username}/{image-name}:{tag-name}
+```
+
+## Usage with Dokku
+
+https://dokku.com/docs~v0.23.9/deployment/methods/images/#docker-image-tag-deployment
+
+## Deploy
+
+- First, make the `deploy.sh` file executable by running the following:
+
+```console
+chmod +x deploy.sh
+```
+
+- Next, simply run the executable on the server:
+
+```console
+deploy.sh
+```
 
 ## Testing
 
