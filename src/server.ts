@@ -19,15 +19,18 @@ export const startServer = async () => {
     console.error("⚠️ Could not connect to database.");
   }
 
-  await orm
-    .getSchemaGenerator()
-    .updateSchema()
-    .then(() => {
-      console.log("🏗 Updated schema.");
-    })
-    .catch(() => {
-      console.error("⚠️ Unable to update schema.");
-    });
+  if (!__prod__) {
+    // Only run schema updates in dev
+    await orm
+      .getSchemaGenerator()
+      .updateSchema()
+      .then(() => {
+        console.log("🏗 Updated schema.");
+      })
+      .catch(() => {
+        console.error("⚠️ Unable to update schema.");
+      });
+  }
 
   await orm
     .getMigrator()
