@@ -1,7 +1,7 @@
 {
   "name": "typescript-graphql-starter",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Typescript + GraphQL starter pack",
   "main": "index.js",
   "scripts": {
     "watch": "tsc -w",
@@ -16,7 +16,7 @@
   },
   "keywords": [],
   "author": "Nick Cheatwood",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nick-cheatwood7/typescript-graphql-starter/issues"
   },
