@@ -82,4 +82,8 @@ deploy.sh
 
 ## Testing
 
-Coming soon...
+- You can run tests with the following:
+
+```console
+yarn test
+```

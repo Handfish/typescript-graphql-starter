@@ -1,4 +1,3 @@
-import "dotenv-safe/config";
 import express, { Express, Request } from "express";
 import { createServer } from "@graphql-yoga/node";
 import { MikroORM } from "@mikro-orm/core";
@@ -9,7 +8,7 @@ import { MyContext } from "./utils/types";
 import { buildSchema } from "type-graphql";
 import { AuthorResolver, BookResolver } from "./resolvers";
 
-export const startServer = async () => {
+export const initServer = async () => {
   const orm = await MikroORM.init(config);
   if (await orm.isConnected()) {
     __prod__
@@ -43,7 +42,6 @@ export const startServer = async () => {
     });
 
   const app: Express = express();
-  const port = parseInt(process.env.PORT) || 5000;
 
   // Create the server
   const graphQLServer = createServer({
@@ -67,10 +65,6 @@ export const startServer = async () => {
 
   // Bind GraphQL to `/graphql` endpoint
   app.use("/graphql", graphQLServer);
-
-  app.listen(port, () => {
-    console.log(`GraphQL server listening at http://localhost:${port}/graphql`);
-  });
 
   return app;
 };

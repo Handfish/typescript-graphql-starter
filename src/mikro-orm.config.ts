@@ -3,7 +3,7 @@ import { Options, ReflectMetadataProvider } from "@mikro-orm/core";
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import path from "path";
-import { __prod__ } from "./utils/constants";
+import { __prod__, __test__ } from "./utils/constants";
 import { Book, Author } from "./entities";
 import { TSMigrationGenerator } from "@mikro-orm/migrations";
 
@@ -12,7 +12,7 @@ export default {
   dbName: process.env.DB_NAME,
   type: "postgresql",
   driver: PostgreSqlDriver,
-  debug: !__prod__,
+  debug: !__prod__ /*&& !__test__*/,
   metadataProvider: ReflectMetadataProvider,
   highlighter: new SqlHighlighter(),
   entities: [Book, Author],

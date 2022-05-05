@@ -66,13 +66,11 @@ export class BookResolver {
     const qb = em.createQueryBuilder(Book, "b");
     qb.select(["b.*"], true)
       .leftJoinAndSelect("b.author", "a")
-      .leftJoinAndSelect("b.categories", "c")
       .orderBy({ createdAt: QueryOrder.DESC })
       .limit(realLimit);
     if (cursor) {
       qb.where("b.createdAt < :cursor", [new Date(parseInt(cursor))]);
     }
-    console.log(await qb.getResult());
     return qb.getResultList();
   }
 
@@ -103,7 +101,7 @@ export class BookResolver {
     }
     const book = em.create(Book, { ...options });
     try {
-      em.persistAndFlush(book);
+      await em.persistAndFlush(book);
       return { book };
     } catch (err) {
       console.log(err);
