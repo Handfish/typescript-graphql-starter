@@ -1,6 +1,10 @@
 import "reflect-metadata";
-import { startServer } from "./server";
+import Application from "./application";
 
-startServer().catch((err) => {
-  console.error(err);
-});
+const main = async () => {
+  const app = new Application();
+  await app.connect();
+  await app.init();
+};
+
+main();
