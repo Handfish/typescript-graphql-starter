@@ -11,7 +11,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Author, Book } from "../entities";
+import { Author, Book } from "../database/entities";
 import { BaseResponse, MyContext } from "../utils/types";
 
 @ObjectType()

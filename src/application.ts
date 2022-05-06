@@ -3,7 +3,7 @@ import express, { Request } from "express";
 import { createServer } from "@graphql-yoga/node";
 import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import mikroOrmConfig from "./mikro-orm.config";
-import { __prod__ } from "./utils/constants";
+import { __prod__, __test__ } from "./utils/constants";
 import { createAuthorLoader, createBookLoader } from "./loaders";
 import { AuthorResolver, BookResolver } from "./resolvers";
 import { Server } from "http";
@@ -66,7 +66,8 @@ export default class Application {
       this.host.use("/graphql", graphQLServer);
       this.host.use(express.json());
       // Listen
-      const port = parseInt(process.env.PORT) || 5000;
+      const port =
+        parseInt(__test__ ? process.env.TEST_PORT : process.env.PORT) || 5000;
       this.host.listen(port, () => {
         console.log(
           `GraphQL Yoga server listening as http://localhost:${port}/graphql`
@@ -76,5 +77,15 @@ export default class Application {
       console.error("Could not start GraphQL Yoga server");
       throw Error(err);
     }
+  };
+
+  public close = async (): Promise<void> => {
+    // Disconnect from db, close http server
+    try {
+      await this.orm.close();
+    } catch (err) {
+      throw Error(err);
+    }
+    this.server.close();
   };
 }

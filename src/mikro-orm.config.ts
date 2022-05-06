@@ -3,13 +3,13 @@ import { Options, ReflectMetadataProvider } from "@mikro-orm/core";
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import path from "path";
-import { __prod__ } from "./utils/constants";
-import { Book, Author } from "./entities";
+import { __prod__, __test__ } from "./utils/constants";
+import { Book, Author } from "./database/entities";
 import { TSMigrationGenerator } from "@mikro-orm/migrations";
 
 export default {
   name: "GraphQL Starter",
-  dbName: process.env.DB_NAME,
+  dbName: !__test__ ? process.env.DB_NAME : process.env.TEST_DB_NAME,
   type: "postgresql",
   driver: PostgreSqlDriver,
   debug: !__prod__,
