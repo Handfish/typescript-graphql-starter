@@ -3,6 +3,7 @@ import { expect } from "chai";
 import supertest, { SuperTest, Test } from "supertest";
 import { clearDatabase } from "../src/utils/services/clearDatabase.service";
 import { TestSeeder } from "../src/database/seeders";
+import { exit } from "process";
 
 let request: SuperTest<Test>;
 let application: Application;
@@ -30,8 +31,10 @@ describe("Book tests", async () => {
 
   after(async () => {
     application.close();
+    exit();
   });
 
+  // TODO: typecheck queries
   it("should get books", async () => {
     const response = await request
       .post("/graphql")
