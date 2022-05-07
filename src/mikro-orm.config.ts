@@ -12,7 +12,7 @@ export default {
   dbName: !__test__ ? process.env.DB_NAME : process.env.TEST_DB_NAME,
   type: "postgresql",
   driver: PostgreSqlDriver,
-  debug: !__prod__,
+  debug: !__prod__ && !__test__,
   metadataProvider: ReflectMetadataProvider,
   highlighter: new SqlHighlighter(),
   entities: [Book, Author],

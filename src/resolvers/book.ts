@@ -165,7 +165,7 @@ export class BookResolver {
     @Ctx() { em }: MyContext
   ): Promise<boolean> {
     try {
-      const book = em.findOneOrFail(Book, { id });
+      const book = await em.findOneOrFail(Book, { id });
       em.removeAndFlush(book);
       return true;
     } catch {

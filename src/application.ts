@@ -5,12 +5,10 @@ import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import mikroOrmConfig from "./mikro-orm.config";
 import { __prod__, __test__ } from "./utils/constants";
 import { createAuthorLoader, createBookLoader } from "./loaders";
-import { AuthorResolver, BookResolver } from "./resolvers";
 import { Server } from "http";
 import cors from "cors";
-import { GraphQLSchema } from "graphql";
-import { buildSchema } from "type-graphql";
 import { MyContext } from "./utils/types";
+import { createSchema } from "./utils/helpers/createSchema";
 
 export default class Application {
   public orm: MikroORM<IDatabaseDriver<Connection>>;
@@ -41,10 +39,8 @@ export default class Application {
     // Build GraphQL schema
     try {
       // Define resolvers and schema
-      const schema: GraphQLSchema = await buildSchema({
-        resolvers: [AuthorResolver, BookResolver],
-        validate: false,
-      });
+      const schema = await createSchema();
+
       // Create GraphQL server
       const graphQLServer = createServer({
         schema,
