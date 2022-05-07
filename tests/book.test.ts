@@ -3,7 +3,6 @@ import { expect } from "chai";
 import supertest, { SuperTest, Test } from "supertest";
 import { clearDatabase } from "../src/utils/services/clearDatabase.service";
 import { TestSeeder } from "../src/database/seeders";
-import { exit } from "process";
 import { Book } from "../src/database/entities";
 
 let request: SuperTest<Test>;
@@ -30,7 +29,6 @@ describe("Book tests", async () => {
 
   after(async () => {
     application.close();
-    exit();
   });
 
   const booksQuery = `query {
