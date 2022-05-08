@@ -4,12 +4,13 @@
   "description": "A Typescript + GraphQL starter pack",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
     "gen-env": "gen-env-types .env -o src/env.d.ts -e .",
     "test": "cross-env NODE_DEV=true NODE_ENV=test ts-mocha ./tests/**/*.test.ts --package package.json",
     "migrate": "npx mikro-orm migration:create",
-    "start": "node dist/index.js"
+    "start": "yarn build && NODE_ENV=production node dist/index.js"
   },
   "repository": {
     "type": "git",
