@@ -1,6 +1,6 @@
 # Typescript GraphQL Template
 
-## Getting Started
+## 📌 Getting Started
 
 1. Install any needed dev dependencies:
 
@@ -22,7 +22,7 @@ yarn watch
 yarn dev
 ```
 
-## Advanced Config
+## ⚙️ Advanced Config
 
 - If you need to add additional properties to the `.env` file, run the following:
 
@@ -32,7 +32,7 @@ yarn gen-env
 
 This will update the `.env.d.ts` and `.env.example` files with the correct properties and type declarations.
 
-## Running SQL Migrations
+## 📦 Running SQL Migrations
 
 - To run SQL migrations, run the following command:
 
@@ -42,7 +42,7 @@ yarn migrate
 
 This will use Mikro-ORM's migration generator to construct and execute SQL migrations on your database.
 
-## Usage with Docker
+## 🐳 Usage with Docker
 
 **Build an Image**
 
@@ -62,11 +62,11 @@ docker login
 docker push {username}/{image-name}:{tag-name}
 ```
 
-## Usage with Dokku
+## 🐳 Usage with Dokku
 
 https://dokku.com/docs~v0.23.9/deployment/methods/images/#docker-image-tag-deployment
 
-## Deploy
+## 👨‍💻 Deploy
 
 - First, make the `deploy.sh` file executable by running the following:
 
@@ -80,6 +80,10 @@ chmod +x deploy.sh
 deploy.sh
 ```
 
-## Testing
+## 🚧 Testing
 
-Coming soon...
+**To run tests with Mocha**
+
+```console
+yarn test
+```

@@ -11,7 +11,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Author, Book } from "../entities";
+import { Author, Book } from "../database/entities";
 import { BaseResponse, MyContext } from "../utils/types";
 
 @ObjectType()
@@ -45,8 +45,8 @@ export class AuthorResolver {
 
   @Query(() => Author, { nullable: true })
   async author(
-    @Ctx() { em }: MyContext,
-    @Arg("id") id: string
+    @Arg("id") id: string,
+    @Ctx() { em }: MyContext
   ): Promise<Author | null> {
     const author = em.findOne(Author, { id });
     if (!author) {
@@ -70,7 +70,6 @@ export class AuthorResolver {
     if (cursor) {
       qb.where("a.createdAt < :cursor", [new Date(parseInt(cursor))]);
     }
-    console.log(await qb.getResult());
     return qb.getResultList();
   }
 

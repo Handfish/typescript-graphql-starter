@@ -12,7 +12,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Author, Book } from "../entities";
+import { Author, Book } from "../database/entities";
 import { BaseResponse, MyContext } from "../utils/types";
 
 @ObjectType()
@@ -66,13 +66,11 @@ export class BookResolver {
     const qb = em.createQueryBuilder(Book, "b");
     qb.select(["b.*"], true)
       .leftJoinAndSelect("b.author", "a")
-      .leftJoinAndSelect("b.categories", "c")
       .orderBy({ createdAt: QueryOrder.DESC })
       .limit(realLimit);
     if (cursor) {
       qb.where("b.createdAt < :cursor", [new Date(parseInt(cursor))]);
     }
-    console.log(await qb.getResult());
     return qb.getResultList();
   }
 
@@ -167,7 +165,7 @@ export class BookResolver {
     @Ctx() { em }: MyContext
   ): Promise<boolean> {
     try {
-      const book = em.findOneOrFail(Book, { id });
+      const book = await em.findOneOrFail(Book, { id });
       em.removeAndFlush(book);
       return true;
     } catch {

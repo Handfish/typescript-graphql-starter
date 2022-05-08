@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { Book } from "../entities/";
+import { Book } from "../database/entities";
 import { EntityManager } from "@mikro-orm/core";
 
 export const createBookLoader = (em: EntityManager) =>

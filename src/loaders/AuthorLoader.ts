@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { Author } from "../entities";
+import { Author } from "../database/entities";
 import { EntityManager } from "@mikro-orm/core";
 
 export const createAuthorLoader = (em: EntityManager) =>

@@ -15,10 +15,10 @@ export default class Book extends CustomBaseEntity {
   year?: number;
 
   @Field()
-  @Property()
-  authorId!: string;
+  @Property({ persist: false })
+  authorId: string;
 
   @Field(() => Author, { nullable: true })
-  @ManyToOne(() => Author, { mapToPk: true, nullable: true })
+  @ManyToOne(() => Author, { nullable: true })
   author?: Author;
 }
