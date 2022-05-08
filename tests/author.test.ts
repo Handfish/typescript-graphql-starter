@@ -28,7 +28,8 @@ describe("Author tests", async () => {
   });
 
   after(async () => {
-    application.close();
+    await application.disconnect();
+    await application.deInit();
   });
 
   // List Authors
@@ -54,5 +55,104 @@ describe("Author tests", async () => {
     const authors = response.body.data.authors;
     authorId = authors[0].id;
     expect(authors).to.be.a("array");
+  });
+
+  const authorByIdQuery = `query Author($id:String!){
+  author(id:$id){
+    id
+  }
+}`;
+
+  // Get Author by Id
+  it("should get Author by ID", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: authorByIdQuery,
+        variables: {
+          id: authorId,
+        },
+      })
+      .expect(200);
+
+    expect(response.body.data.author).to.be.an("object");
+  });
+
+  const createAuthorMutation = `mutation CreateAuthor($options:CreateAuthorInput!){
+  createAuthor(options:$options){
+    author{
+      id
+      firstName
+    }
+  }
+}`;
+
+  // Create Author
+  it("should create Author", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: createAuthorMutation,
+        variables: {
+          options: {
+            firstName: "Test",
+            middleName: "Middleton",
+            lastName: "Person",
+          },
+        },
+      })
+      .expect(200);
+
+    author = response.body.data.createAuthor.author;
+    authorId = author.id;
+    expect(author).to.be.an("object");
+    expect(author.firstName).to.be.equal("Test");
+  });
+
+  const updateAuthorMutation = `mutation UpdateAuthor($id:String!,$options:CreateAuthorInput!){
+  updateAuthor(id:$id,options:$options){
+    author{
+      id
+      firstName
+    }
+  }
+}`;
+
+  // Update Author
+  it("should update Author", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: updateAuthorMutation,
+        variables: {
+          id: authorId,
+          options: {
+            firstName: "Test2",
+          },
+        },
+      })
+      .expect(200);
+
+    author = response.body.data.updateAuthor.author;
+    expect(author).to.be.an("object");
+    expect(author.firstName).to.be.equal("Test2");
+  });
+
+  const deleteAuthorMutation = `mutation DeleteAuthor($id:String!){
+  deleteAuthor(id:$id)
+}`;
+  // Delete Author
+  it("should delete Author", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: deleteAuthorMutation,
+        variables: {
+          id: authorId,
+        },
+      })
+      .expect(200);
+
+    expect(response.body.data.deleteAuthor).to.be.true;
   });
 });

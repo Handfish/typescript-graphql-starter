@@ -64,10 +64,11 @@ export default class Application {
       // Listen
       const port =
         parseInt(__test__ ? process.env.TEST_PORT : process.env.PORT) || 5000;
-      this.host.listen(port, () => {
-        console.log(
-          `GraphQL Yoga server listening as http://localhost:${port}/graphql`
-        );
+      this.server = this.host.listen(port, () => {
+        !__test__ &&
+          console.log(
+            `GraphQL Yoga server listening as http://localhost:${port}/graphql`
+          );
       });
     } catch (err) {
       console.error("Could not start GraphQL Yoga server");
@@ -75,13 +76,21 @@ export default class Application {
     }
   };
 
-  public close = async (): Promise<void> => {
-    // Disconnect from db, close http server
+  public disconnect = async (): Promise<void> => {
+    // Disconnect from db
     try {
       await this.orm.close();
     } catch (err) {
       throw Error(err);
     }
-    this.server.close();
+  };
+
+  public deInit = async (): Promise<void> => {
+    // Close the HTTP server
+    try {
+      this.server.close();
+    } catch (err) {
+      throw Error(err);
+    }
   };
 }

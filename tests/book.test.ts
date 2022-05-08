@@ -8,6 +8,7 @@ import { Book } from "../src/database/entities";
 let request: SuperTest<Test>;
 let application: Application;
 let bookId: string;
+let authorId: string;
 let book: Book;
 
 describe("Book tests", async () => {
@@ -28,7 +29,8 @@ describe("Book tests", async () => {
   });
 
   after(async () => {
-    application.close();
+    await application.disconnect();
+    await application.deInit();
   });
 
   const booksQuery = `query {
@@ -43,7 +45,7 @@ describe("Book tests", async () => {
             }`;
 
   // Get books
-  it("should get books", async () => {
+  it("should get Books", async () => {
     const response = await request
       .post("/graphql")
       .send({
@@ -53,6 +55,7 @@ describe("Book tests", async () => {
 
     const books = response.body.data.books;
     bookId = books[0].id;
+    authorId = books[0].author.id;
     expect(books).to.be.a("array");
   });
 
@@ -66,7 +69,7 @@ describe("Book tests", async () => {
 }`;
 
   // Get Book by Id
-  it("should get book by id", async () => {
+  it("should get Book by ID", async () => {
     const response = await request
       .post("/graphql")
       .send({
@@ -79,6 +82,38 @@ describe("Book tests", async () => {
 
     book = response.body.data.book;
     expect(response.body.data.book).to.be.a("object");
+  });
+
+  const createBookMutation = `mutation CreateBook($options:CreateBookInput!){
+  createBook(options:$options){
+    book {
+      id
+      author{
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}`;
+
+  // Create Book
+  it("should create Book", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: createBookMutation,
+        variables: {
+          options: {
+            title: "A New Book!",
+            year: 2022,
+            authorId: authorId,
+          },
+        },
+      })
+      .expect(200);
+
+    expect(response.body.data.createBook.book).to.be.an("object");
   });
 
   const updateBookMutation = `mutation UpdateBook($id:String!,$options:CreateBookInput!){
