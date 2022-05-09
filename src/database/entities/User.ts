@@ -23,4 +23,8 @@ export default class User extends CustomBaseEntity {
 
   @Property()
   password!: string;
+
+  @Field(() => Boolean)
+  @Property({ default: false })
+  confirmed?: boolean;
 }

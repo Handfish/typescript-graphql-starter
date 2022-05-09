@@ -11,6 +11,7 @@ export class UserFactory extends Factory<User> {
       age: faker.datatype.number(),
       email: faker.internet.email(),
       password: faker.internet.password(),
+      confirmed: faker.datatype.boolean(),
     };
   }
 }
