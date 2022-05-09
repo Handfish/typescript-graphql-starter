@@ -69,6 +69,7 @@ export default class Application {
       // Bind GraphQL to `/graphql` endpoint
       this.host.use("/graphql", graphQLServer);
       this.host.use(express.json());
+      this.host.use(express.text());
 
       // Set up confirm email endpoint
       this.host.get("/confirm/:id", async (req: Request, res: Response) => {
@@ -78,11 +79,15 @@ export default class Application {
           // Find user record
           const em = this.orm.em.fork();
           const user = await em.findOne(User, { id: userId });
-          // Update User record
-          wrap(user).assign({
-            confirmed: true,
-          });
-          res.status(200).send("OK");
+          if (user) {
+            // Update User record
+            wrap(user).assign({
+              confirmed: true,
+            });
+            res.status(200).send("OK");
+          } else {
+            res.status(404).send("Not found");
+          }
         } else {
           res.status(400).send("Invalid");
         }

@@ -1,6 +1,5 @@
 import Application from "../src/application";
-import { expect } from "chai";
-import supertest, { SuperTest, Test } from "supertest";
+import { SuperTest, Test } from "supertest";
 import { clearDatabase } from "../src/utils/services/clearDatabase.service";
 import { TestSeeder } from "../src/database/seeders";
 

@@ -19,8 +19,7 @@ export default class UserResolver {
     });
     try {
       await em.persistAndFlush(user);
-      const link = await createConfirmEmailLink(url, user.id, redis);
-      console.log(link);
+      await createConfirmEmailLink(url, user.id, redis);
       return true;
     } catch {
       return false;
