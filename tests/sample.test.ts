@@ -27,6 +27,5 @@ describe("Sample tests", async () => {
     const seeder = orm.getSeeder();
     await orm.getSchemaGenerator().refreshDatabase();
     await seeder.seed(TestSeeder);
-    console.log("✨ Database cleared & entities seeded!");
   });
 });
