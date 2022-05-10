@@ -5,6 +5,7 @@ declare global {
       DB_NAME: string;
       TEST_PORT: string;
       TEST_DB_NAME: string;
+      SPARK_POST_API_KEY: string;
     }
   }
 }

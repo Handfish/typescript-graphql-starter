@@ -53,9 +53,32 @@ describe("User tests", async () => {
     expect(response.body.data.register).to.be.true;
   });
 
-  // Logout test
-
   // Login test
+  const loginMutation = `mutation Login($email:String!,$password:String!){
+  login(email:$email,password:$password){
+    errors {
+      field
+      message
+    }
+    user{
+      id
+    }
+  }
+}`;
+  it("should login User", async () => {
+    const response = await request
+      .post("/graphql")
+      .send({
+        query: loginMutation,
+        variables: {
+          email,
+          password,
+        },
+      })
+      .expect(200);
+    expect(response.body.data.login.errors).to.be.null;
+  });
+  // Logout test
 
   // `me` Query
 });

@@ -12,6 +12,7 @@ pids
 logs
 results
 tmp
+dump.rdb
 
 # Build
 public/css/main.css

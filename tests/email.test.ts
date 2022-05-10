@@ -6,7 +6,8 @@ import { UserFactory } from "../src/database/factories";
 import { createConfirmEmailLink } from "../src/utils/services/email.service";
 import { expect } from "chai";
 import { User } from "../src/database/entities";
-import { EntityManager, wrap } from "@mikro-orm/core";
+import { EntityManager } from "@mikro-orm/core";
+import { redis } from "../src/database/redis";
 
 let app: Application;
 let request: SuperTest<Test>;
@@ -36,7 +37,6 @@ describe("Email tests", () => {
   });
 
   it("Confirmation links work", async () => {
-    const redis = app.redis;
     // Construct confirm link
     const url = await createConfirmEmailLink("", userId, redis);
     // Make GET request to confirm link

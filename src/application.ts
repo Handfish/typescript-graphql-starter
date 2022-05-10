@@ -9,22 +9,23 @@ import { Server } from "http";
 import cors from "cors";
 import { MyContext } from "./utils/types";
 import { createSchema } from "./utils/helpers/createSchema";
-import Redis from "ioredis";
+import { redis } from "./database/redis";
 import { User } from "./database/entities";
 export default class Application {
   public orm: MikroORM<IDatabaseDriver<Connection>>;
-  public redis: Redis;
   public host: express.Application;
   public server: Server;
 
   public connect = async (): Promise<void> => {
     try {
       this.orm = await MikroORM.init(mikroOrmConfig);
-      const migrator = this.orm.getMigrator();
-      const migrations = await migrator.getPendingMigrations();
-      if (migrations && migrations.length > 0) {
-        // Run migrations
-        await migrator.up();
+      if (!__test__) {
+        const migrator = this.orm.getMigrator();
+        const migrations = await migrator.getPendingMigrations();
+        if (migrations && migrations.length > 0) {
+          // Run migrations
+          await migrator.up();
+        }
       }
     } catch (err) {
       console.error("⚠️ Could not connect to database.");
@@ -34,9 +35,6 @@ export default class Application {
 
   public init = async (): Promise<void> => {
     this.host = express();
-
-    // Build Redis Client
-    this.redis = new Redis();
 
     // Enable cors
     this.host.use(cors());
@@ -56,7 +54,7 @@ export default class Application {
             url:
               (req as Request).protocol + "://" + (req as Request).get("host"),
             em: this.orm.em.fork(),
-            redis: this.redis,
+            redis: redis,
             bookLoader: createBookLoader(this.orm.em),
             authorLoader: createAuthorLoader(this.orm.em),
           } as MyContext;
@@ -74,7 +72,7 @@ export default class Application {
       // Set up confirm email endpoint
       this.host.get("/confirm/:id", async (req: Request, res: Response) => {
         const { id } = req.params;
-        const userId = await this.redis.get(id);
+        const userId = await redis.get(id);
         if (userId) {
           // Find user record
           const em = this.orm.em;
@@ -84,7 +82,7 @@ export default class Application {
             user.confirmed = true;
             await em.persistAndFlush(user);
             // Remove key from Redis
-            await this.redis.del(id);
+            await redis.del(id);
             res.status(200).send("OK");
           }
         } else {
