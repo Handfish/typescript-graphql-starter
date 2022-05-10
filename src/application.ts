@@ -7,10 +7,14 @@ import { __prod__, __test__ } from "./utils/constants";
 import { createAuthorLoader, createBookLoader } from "./loaders";
 import { Server } from "http";
 import cors from "cors";
-import { MyContext } from "./utils/types";
+import { MyContext, Session } from "./utils/types";
 import { createSchema } from "./utils/helpers/createSchema";
 import { redis } from "./database/redis";
 import { User } from "./database/entities";
+import session from "express-session";
+import connectRedis from "connect-redis";
+
+const RedisStore = connectRedis(session);
 export default class Application {
   public orm: MikroORM<IDatabaseDriver<Connection>>;
   public host: express.Application;
@@ -37,7 +41,28 @@ export default class Application {
     this.host = express();
 
     // Enable cors
-    this.host.use(cors());
+    this.host.use(
+      cors({
+        credentials: true,
+        origin: "http://localhost:3000",
+      })
+    );
+
+    // Configure session storage
+    this.host.use(
+      session({
+        name: "qid",
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: __prod__,
+          maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+        },
+        store: new RedisStore({ client: redis }),
+      })
+    );
 
     // Build GraphQL schema
     try {
@@ -51,6 +76,7 @@ export default class Application {
         context: ({ req }) => {
           return {
             req: req as Request,
+            session: (req as Request).session as Session,
             url:
               (req as Request).protocol + "://" + (req as Request).get("host"),
             em: this.orm.em.fork(),

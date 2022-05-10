@@ -45,7 +45,7 @@ export default class UserResolver {
   async login(
     @Arg("email") email: string,
     @Arg("password") password: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { session, em }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, { email });
     if (!user) {
@@ -69,6 +69,8 @@ export default class UserResolver {
         ],
       };
     }
+    // Create a cookie for this user
+    session.userId = user.id;
     return { user };
   }
 }
