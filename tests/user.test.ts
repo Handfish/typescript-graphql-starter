@@ -38,8 +38,8 @@ describe("User tests", async () => {
     register(email:$email,password:$password)
   }`;
   it("should register User", async () => {
-    let email = "test@email.com";
-    let password = "test123";
+    email = "test@email.com";
+    password = "test123";
     const response = await request
       .post("/graphql")
       .send({

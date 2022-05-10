@@ -6,11 +6,11 @@ import { UserFactory } from "../src/database/factories";
 import { createConfirmEmailLink } from "../src/utils/services/email.service";
 import { expect } from "chai";
 import { User } from "../src/database/entities";
-import e from "express";
-import { exit } from "process";
+import { EntityManager, wrap } from "@mikro-orm/core";
 
 let app: Application;
 let request: SuperTest<Test>;
+let em: EntityManager;
 let userId: string;
 
 describe("Email tests", () => {
@@ -25,9 +25,8 @@ describe("Email tests", () => {
     await clearDatabase(orm);
     await orm.getSchemaGenerator().refreshDatabase();
     // Create a temporary User
-    const em = app.orm.em.fork();
-    const user = new UserFactory(em).makeOne();
-    await em.persistAndFlush(user);
+    em = app.orm.em;
+    const user = new UserFactory(em).makeOne({ confirmed: false });
     userId = user.id;
   });
 
@@ -36,12 +35,27 @@ describe("Email tests", () => {
     await app.deInit();
   });
 
-  it("Make sure email confirmation links work", async () => {
+  it("Confirmation links work", async () => {
+    const redis = app.redis;
     // Construct confirm link
-    const url = await createConfirmEmailLink("", userId, app.redis);
+    const url = await createConfirmEmailLink("", userId, redis);
     // Make GET request to confirm link
     const response = await request.get(url).expect(200);
     const text = response.text;
     expect(text).to.equal("OK");
+    // Makre sure User was marked as `confirmed`
+    const user = await em.findOne(User, { id: userId });
+    expect(user.confirmed).to.be.true;
+    // Check if ID is still in redis
+    const chunks = url.split("/");
+    const key = chunks[chunks.length - 1];
+    const value = await redis.get(key);
+    expect(value).to.be.null;
+  });
+
+  it("sends `invalid` back if bad link", async () => {
+    const response = await request.get("/confirm/123").expect(400);
+    const text = response.text;
+    expect(text).to.be.equal("Invalid");
   });
 });

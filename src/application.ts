@@ -1,7 +1,7 @@
 import "dotenv-safe/config";
 import express, { Request, Response } from "express";
 import { createServer } from "@graphql-yoga/node";
-import { Connection, IDatabaseDriver, MikroORM, wrap } from "@mikro-orm/core";
+import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import mikroOrmConfig from "./mikro-orm.config";
 import { __prod__, __test__ } from "./utils/constants";
 import { createAuthorLoader, createBookLoader } from "./loaders";
@@ -77,16 +77,15 @@ export default class Application {
         const userId = await this.redis.get(id);
         if (userId) {
           // Find user record
-          const em = this.orm.em.fork();
-          const user = await em.findOne(User, { id: userId });
+          const em = this.orm.em;
+          const user = await em.findOne(User, { id: userId, confirmed: false });
           if (user) {
             // Update User record
-            wrap(user).assign({
-              confirmed: true,
-            });
+            user.confirmed = true;
+            await em.persistAndFlush(user);
+            // Remove key from Redis
+            await this.redis.del(id);
             res.status(200).send("OK");
-          } else {
-            res.status(404).send("Not found");
           }
         } else {
           res.status(400).send("Invalid");
